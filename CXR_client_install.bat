@@ -10,8 +10,15 @@ adb.exe install -r app-debug.apk
 echo installing cxr client app......
 timeout /t 2
 
-for /f "tokens=14" %%a in ('ipconfig ^| findstr /C:"IPv4 Address"') do set ip=%%a
-echo -s %ip% > CloudXRLaunchOptions.txt
+@echo off
+(for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /C:"IPv4 Address"') do echo -s %%a) > temp.txt
+
+@echo off & setlocal EnableDelayedExpansion
+set row=
+for /F "delims=" %%j in (temp.txt) do (
+if defined row echo.!row!>> CloudXRLaunchOptions.txt
+set row=%%j
+)
 
 adb.exe push CloudXRLaunchOptions.txt /sdcard/CloudXRLaunchOptions.txt
 echo pushing launch options to oculus......
